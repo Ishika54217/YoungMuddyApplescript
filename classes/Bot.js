@@ -5,6 +5,8 @@ const { Client, Collection, GatewayIntentBits, Collector } = require("discord.js
 
     const Command = require("./Command.js");
     const Event = require("./Event.js");
+    const Button = require("./Button.js");
+    const Modal = require("./Modal.js");
 
     class Bot extends Client {
       constructor(options = {}) {
@@ -39,6 +41,8 @@ const { Client, Collection, GatewayIntentBits, Collector } = require("discord.js
         this.config = require("../config.js");
         this.commands = new Collection();
         this.aliases = new Collection();
+        this.buttons = new Collection();
+        this.modalForms = new Collection();
         this.utils = new (require("../classes/Utils"))(this);
 
         console.clear();
@@ -58,6 +62,20 @@ const { Client, Collection, GatewayIntentBits, Collector } = require("discord.js
           console.log(' [antiCrash] :: Uncaught Exception/Catch (MONITOR)');
           console.log(err, origin);
         });
+      }
+
+      loadButtons() {
+        for (const dir of readdirSync('./buttons/')) {
+          for (let file of readdirSync(`./buttons/${dir}/`).filter(file => file.endsWith('.js'))) {
+
+            delete require.cache[file];
+            let pull = new (require(`../buttons/${dir}/${file}`))(this);
+
+            if (!(pull instanceof Button)) return;
+
+            this.buttons.set(pull.id, pull);
+          }
+        }
       }
 
       loadCommands() {
@@ -92,6 +110,20 @@ const { Client, Collection, GatewayIntentBits, Collector } = require("discord.js
         }
       }
 
+      loadModals() {
+        for (const dir of readdirSync('./modals/')) {
+          for (let file of readdirSync(`./modals/${dir}/`).filter(file => file.endsWith('.js'))) {
+
+            delete require.cache[file];
+            let pull = new (require(`../modals/${dir}/${file}`))(this);
+
+            if (!(pull instanceof Modal)) return;
+
+            this.modalForms.set(pull.id, pull);
+          }
+        }
+      }
+
       login() {
         super.login(process.env['BOT_TOKEN']).catch(err => {
           console.log(`[ERROR]`.red, "Invalid Token Provided!".green)
@@ -100,8 +132,10 @@ const { Client, Collection, GatewayIntentBits, Collector } = require("discord.js
 
       async start() {
         this.loadAntiCrash();
+        this.loadButtons();
         this.loadCommands();
         this.loadEvents();
+        this.loadModals();
         this.login();
       }
     }

@@ -3,9 +3,17 @@
     "classes/Bot.js": [
       {
         "id": "b5c749a0-133e-4dfb-8138-aa9c52e7d12d",
-        "line": 9,
-        "version": 1,
-        "index": 295
+        "line": 1,
+        "version": 294,
+        "index": 0
+      }
+    ],
+    "modals/Marketplace/buyModalForm.js": [
+      {
+        "id": "b9adf6ed-a820-4f3a-bffb-1608274391c5",
+        "line": 26,
+        "version": 430,
+        "index": 856
       }
     ]
   }
